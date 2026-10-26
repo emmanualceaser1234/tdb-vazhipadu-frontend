@@ -250,13 +250,9 @@ function AppContent() {
           <>
             {/* Hero */}
             <section aria-labelledby="hero-heading" className="mb-10 text-center">
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-950 border border-emerald-800 rounded-full text-emerald-400 text-xs font-medium mb-4">
-                <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" aria-hidden="true" />
-                {t('liveBookingBadge')}
-              </div>
               <h2
                 id="hero-heading"
-                className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-emerald-400 via-teal-300 to-indigo-400 bg-clip-text text-transparent mb-3 inline-block py-2 pb-5 leading-[1.3] sm:leading-[1.35] max-w-full"
+                className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-emerald-400 via-teal-300 to-indigo-400 bg-clip-text text-transparent mb-3 block py-2 pb-5 leading-[1.3] sm:leading-[1.35] max-w-full"
               >
                 {t('heroTitle')}
               </h2>
