@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useInRouterContext, MemoryRouter } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Shield, LogOut, ClipboardList, Tag } from 'lucide-react';
 import type { StaffUser } from '../types/auth';
 import { getStoredStaffUser, logoutStaff } from '../api/authService';
@@ -8,6 +9,7 @@ import { StaffOrdersDashboard } from './StaffOrdersDashboard';
 import { StaffOfferingsManager } from './StaffOfferingsManager';
 
 function StaffPortalContent() {
+  const { t } = useTranslation();
   const [currentUser, setCurrentUser] = useState<StaffUser | null>(getStoredStaffUser);
   const [activeTab, setActiveTab] = useState<'orders' | 'offerings'>('orders');
 
@@ -54,7 +56,7 @@ function StaffPortalContent() {
           className="min-h-[44px] px-4 py-2 bg-slate-900 hover:bg-rose-950/80 border border-slate-700 hover:border-rose-700 text-slate-300 hover:text-rose-300 text-xs font-semibold rounded-xl transition-all flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-rose-500 self-start sm:self-auto"
         >
           <LogOut className="w-4 h-4" aria-hidden="true" />
-          <span>Sign Out</span>
+          <span>{t('signOut')}</span>
         </button>
       </div>
 
@@ -71,7 +73,7 @@ function StaffPortalContent() {
           aria-pressed={activeTab === 'orders'}
         >
           <ClipboardList className="w-4 h-4" aria-hidden="true" />
-          <span>Booked Orders</span>
+          <span>{t('bookedOrdersTab')}</span>
         </button>
 
         <button
@@ -85,7 +87,7 @@ function StaffPortalContent() {
           aria-pressed={activeTab === 'offerings'}
         >
           <Tag className="w-4 h-4" aria-hidden="true" />
-          <span>Manage Offerings</span>
+          <span>{t('manageOfferingsTab')}</span>
         </button>
       </div>
 
