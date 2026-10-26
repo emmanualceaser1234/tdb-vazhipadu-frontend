@@ -100,6 +100,53 @@ export async function getOfferings(templeId: string): Promise<Offering[]> {
   return store.offerings.filter((o) => o.templeId === templeId);
 }
 
+export async function getAllOfferings(): Promise<Offering[]> {
+  await simulateDelay();
+  maybeThrow();
+  return [...store.offerings];
+}
+
+export async function updateOffering(
+  offeringId: string,
+  updates: Partial<Offering>,
+): Promise<Offering> {
+  await simulateDelay();
+  maybeThrow();
+
+  const idx = store.offerings.findIndex((o) => o.id === offeringId);
+  if (idx === -1) {
+    throw new ApiError(`Offering with ID ${offeringId} not found.`, 'NOT_FOUND');
+  }
+
+  const updated: Offering = {
+    ...store.offerings[idx],
+    ...updates,
+    id: offeringId, // ID remains immutable
+  };
+
+  store.offerings[idx] = updated;
+  saveToStorage(STORAGE_KEYS.OFFERINGS, store.offerings);
+
+  return updated;
+}
+
+export async function addOffering(
+  newOffering: Omit<Offering, 'id'>,
+): Promise<Offering> {
+  await simulateDelay();
+  maybeThrow();
+
+  const offering: Offering = {
+    ...newOffering,
+    id: `off-${Date.now()}`,
+  };
+
+  store.offerings.push(offering);
+  saveToStorage(STORAGE_KEYS.OFFERINGS, store.offerings);
+
+  return offering;
+}
+
 export async function createOrder(request: CreateOrderDTO): Promise<Order> {
   await simulateDelay();
   maybeThrow();
