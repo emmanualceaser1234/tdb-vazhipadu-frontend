@@ -10,6 +10,7 @@ interface CartDrawerProps {
   onOrderSubmit?: (values: OrderFormValues) => void;
   isSubmitting?: boolean;
   submitError?: string | null;
+  onRetry?: () => void;
 }
 
 export function CartDrawer({
@@ -19,6 +20,7 @@ export function CartDrawer({
   onOrderSubmit,
   isSubmitting = false,
   submitError = null,
+  onRetry,
 }: CartDrawerProps) {
   const [view, setView] = useState<'cart' | 'checkout'>('cart');
   const { items, totalAmount, totalItems, incrementItem, decrementItem, removeItem } = cart;
@@ -249,6 +251,7 @@ export function CartDrawer({
               }}
               isSubmitting={isSubmitting}
               submitError={submitError}
+              onRetry={onRetry}
             />
           </div>
         )}
