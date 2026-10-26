@@ -1,18 +1,32 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Landmark, ShoppingCart, ChevronDown, IndianRupee } from 'lucide-react';
+import { useLocation, useNavigate, BrowserRouter, useInRouterContext } from 'react-router-dom';
+import {
+  Landmark,
+  ShoppingCart,
+  ChevronDown,
+  IndianRupee,
+  ShieldCheck,
+  BookOpen,
+} from 'lucide-react';
 import type { Temple, Offering, Order, OfferingItem, Nakshatra } from './types/vazhipadu';
 import { getTemples, createOrder } from './api/mockClient';
 import { OfferingsList } from './components/OfferingsList';
 import { useCart } from './hooks/useCart';
 import { CartDrawer } from './components/CartDrawer';
 import { OrderConfirmationCard } from './components/OrderConfirmationCard';
+import { StaffOrdersDashboard } from './components/StaffOrdersDashboard';
 import type { OrderFormValues } from './components/OrderForm';
 
 function generateIdempotencyKey(): string {
   return `idem-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 }
 
-export function App() {
+function AppContent() {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const isStaffRoute = location.pathname.startsWith('/staff');
+
   const [temples, setTemples] = useState<Temple[]>([]);
   const [selectedTempleId, setSelectedTempleId] = useState<string | null>(null);
   const [templesLoading, setTemplesLoading] = useState(true);
@@ -51,7 +65,6 @@ export function App() {
   // Phase 3: Submit order with Double-Submit Prevention & Idempotency
   const handleOrderSubmit = useCallback(
     async (values: OrderFormValues) => {
-      // Double-submit prevention
       if (isSubmitting) return;
 
       setIsSubmitting(true);
@@ -89,7 +102,6 @@ export function App() {
         setIdempotencyKey(generateIdempotencyKey()); // Renew key for next booking
       } catch (err) {
         // Failure flow:
-        // Cart state and form input state are PRESERVED
         const message =
           err instanceof Error
             ? err.message
@@ -123,7 +135,7 @@ export function App() {
     <div className="min-h-screen bg-slate-900 text-slate-100 relative">
       {/* ── Header ── */}
       <header className="sticky top-0 z-40 bg-slate-900/80 backdrop-blur-md border-b border-slate-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-wrap items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-emerald-500 to-indigo-600 flex items-center justify-center shadow-lg">
               <Landmark className="w-5 h-5 text-white" aria-hidden="true" />
@@ -134,37 +146,75 @@ export function App() {
             </div>
           </div>
 
-          {/* Cart trigger button */}
-          <button
-            type="button"
-            onClick={() => setIsCartOpen(true)}
-            aria-label={`Open shopping cart — ${cart.totalItems} item${cart.totalItems !== 1 ? 's' : ''}`}
-            className="relative flex items-center gap-2.5 px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-slate-600 rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-slate-900 shadow-sm"
+          {/* Navigation Tabs: Devotee Booking vs Staff Orders */}
+          <nav
+            className="flex items-center gap-1 bg-slate-800/80 p-1 rounded-xl border border-slate-700/80"
+            aria-label="Portal Navigation"
           >
-            <div className="relative">
-              <ShoppingCart className="w-5 h-5 text-emerald-400" aria-hidden="true" />
-              {cart.totalItems > 0 && (
-                <span className="absolute -top-2.5 -right-2.5 min-w-5 h-5 bg-emerald-500 text-white text-xs font-bold rounded-full flex items-center justify-center px-1">
-                  {cart.totalItems}
-                </span>
-              )}
-            </div>
-            <div className="flex items-center gap-1.5 text-sm">
-              <span className="text-slate-200 font-medium hidden sm:inline">Cart</span>
-              {cart.totalAmount > 0 && (
-                <span className="hidden sm:inline-flex items-center text-xs font-bold text-emerald-400 bg-emerald-950/60 border border-emerald-800/60 px-2 py-0.5 rounded-md">
-                  <IndianRupee className="w-3 h-3" aria-hidden="true" />
-                  {cart.totalAmount.toLocaleString('en-IN')}
-                </span>
-              )}
-            </div>
-          </button>
+            <button
+              type="button"
+              onClick={() => navigate('/')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                !isStaffRoute
+                  ? 'bg-emerald-600 text-white shadow-sm'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+              aria-current={!isStaffRoute ? 'page' : undefined}
+            >
+              <BookOpen className="w-3.5 h-3.5" aria-hidden="true" />
+              <span>Devotee Booking</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate('/staff/orders')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                isStaffRoute
+                  ? 'bg-emerald-600 text-white shadow-sm'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+              aria-current={isStaffRoute ? 'page' : undefined}
+            >
+              <ShieldCheck className="w-3.5 h-3.5" aria-hidden="true" />
+              <span>Staff Orders</span>
+            </button>
+          </nav>
+
+          {/* Cart trigger button (visible on devotee view) */}
+          {!isStaffRoute && (
+            <button
+              type="button"
+              onClick={() => setIsCartOpen(true)}
+              aria-label={`Open shopping cart — ${cart.totalItems} item${cart.totalItems !== 1 ? 's' : ''}`}
+              className="relative flex items-center gap-2.5 px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-slate-600 rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-slate-900 shadow-sm"
+            >
+              <div className="relative">
+                <ShoppingCart className="w-5 h-5 text-emerald-400" aria-hidden="true" />
+                {cart.totalItems > 0 && (
+                  <span className="absolute -top-2.5 -right-2.5 min-w-5 h-5 bg-emerald-500 text-white text-xs font-bold rounded-full flex items-center justify-center px-1">
+                    {cart.totalItems}
+                  </span>
+                )}
+              </div>
+              <div className="flex items-center gap-1.5 text-sm">
+                <span className="text-slate-200 font-medium hidden sm:inline">Cart</span>
+                {cart.totalAmount > 0 && (
+                  <span className="hidden sm:inline-flex items-center text-xs font-bold text-emerald-400 bg-emerald-950/60 border border-emerald-800/60 px-2 py-0.5 rounded-md">
+                    <IndianRupee className="w-3 h-3" aria-hidden="true" />
+                    {cart.totalAmount.toLocaleString('en-IN')}
+                  </span>
+                )}
+              </div>
+            </button>
+          )}
         </div>
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-        {/* ── Phase 3: Order Confirmation View ── */}
-        {confirmedOrder ? (
+        {/* ── Route 1: Staff Orders Management Dashboard ── */}
+        {isStaffRoute ? (
+          <StaffOrdersDashboard />
+        ) : confirmedOrder ? (
+          /* ── Route 2: Order Confirmation View ── */
           <div className="max-w-2xl mx-auto mb-10" data-testid="confirmation-view">
             <OrderConfirmationCard
               order={confirmedOrder}
@@ -173,8 +223,9 @@ export function App() {
             />
           </div>
         ) : (
+          /* ── Route 3: Devotee Offerings Booking ── */
           <>
-            {/* ── Hero ── */}
+            {/* Hero */}
             <section aria-labelledby="hero-heading" className="mb-10 text-center">
               <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-950 border border-emerald-800 rounded-full text-emerald-400 text-xs font-medium mb-4">
                 <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" aria-hidden="true" />
@@ -191,7 +242,7 @@ export function App() {
               </p>
             </section>
 
-            {/* ── Temple Selector ── */}
+            {/* Temple Selector */}
             <section aria-labelledby="temple-select-label" className="mb-8">
               <div className="max-w-lg mx-auto">
                 <label
@@ -236,14 +287,14 @@ export function App() {
               )}
             </section>
 
-            {/* ── Offerings List ── */}
+            {/* Offerings List */}
             <OfferingsList templeId={selectedTempleId} onAddToCart={handleAddToCart} />
           </>
         )}
       </main>
 
-      {/* ── Floating Cart Bar when cart has items and drawer & confirmation are closed ── */}
-      {cart.totalItems > 0 && !isCartOpen && !confirmedOrder && (
+      {/* Floating Cart Bar when cart has items and drawer & confirmation & staff are closed */}
+      {!isStaffRoute && cart.totalItems > 0 && !isCartOpen && !confirmedOrder && (
         <div className="fixed bottom-6 inset-x-0 z-30 flex justify-center px-4 pointer-events-none">
           <button
             type="button"
@@ -262,7 +313,7 @@ export function App() {
         </div>
       )}
 
-      {/* ── Cart Drawer & Checkout ── */}
+      {/* Cart Drawer & Checkout */}
       <CartDrawer
         cart={cart}
         isOpen={isCartOpen}
@@ -278,6 +329,18 @@ export function App() {
       </footer>
     </div>
   );
+}
+
+export function App() {
+  const inRouter = useInRouterContext();
+  if (!inRouter) {
+    return (
+      <BrowserRouter>
+        <AppContent />
+      </BrowserRouter>
+    );
+  }
+  return <AppContent />;
 }
 
 export default App;
