@@ -148,7 +148,7 @@ export const resources = {
     translation: {
       // ── Header & Common
       appName: 'വഴിപാട്',
-      appSubtitle: 'ക്ഷേത്ര വഴിപാടുകൾ ബുക്ക് ചെയ്യാം',
+      appSubtitle: 'ക്ഷേത്ര വഴിപാട് ഓൺലൈൻ ബുക്കിംഗ്',
       skipToContent: 'പ്രധാന ഉള്ളടക്കത്തിലേക്ക് പോകുക',
       devoteeBooking: 'ഭക്തജന ബുക്കിംഗ്',
       staffOrders: 'ജീവനക്കാരുടെ പോർട്ടൽ',

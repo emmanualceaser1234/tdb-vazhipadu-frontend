@@ -152,8 +152,8 @@ function AppContent() {
               <Landmark className="w-5 h-5 text-white" aria-hidden="true" />
             </div>
             <div>
-              <h1 className="text-lg font-bold text-slate-100 leading-none">{t('appName')}</h1>
-              <p className="text-xs text-slate-400 mt-0.5">{t('appSubtitle')}</p>
+              <h1 className="text-lg font-bold text-slate-100 leading-snug">{t('appName')}</h1>
+              <p className="text-xs text-slate-400 mt-0.5 leading-normal">{t('appSubtitle')}</p>
             </div>
           </div>
 
@@ -256,7 +256,7 @@ function AppContent() {
               </div>
               <h2
                 id="hero-heading"
-                className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-emerald-400 via-teal-300 to-indigo-400 bg-clip-text text-transparent mb-3"
+                className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-emerald-400 via-teal-300 to-indigo-400 bg-clip-text text-transparent mb-3 inline-block py-2 pb-5 leading-[1.3] sm:leading-[1.35] max-w-full"
               >
                 {t('heroTitle')}
               </h2>
