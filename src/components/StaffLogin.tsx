@@ -1,4 +1,5 @@
 import { useState, useId } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Lock, Mail, Shield, AlertCircle, ArrowRight, UserCheck, KeyRound } from 'lucide-react';
 import type { StaffUser } from '../types/auth';
 import { loginStaff, DUMMY_STAFF_ACCOUNTS } from '../api/authService';
@@ -8,6 +9,7 @@ interface StaffLoginProps {
 }
 
 export function StaffLogin({ onLoginSuccess }: StaffLoginProps) {
+  const { t } = useTranslation();
   const uid = useId();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -49,10 +51,10 @@ export function StaffLogin({ onLoginSuccess }: StaffLoginProps) {
           <Shield className="w-7 h-7" aria-hidden="true" />
         </div>
         <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-100">
-          Temple Staff Portal Login
+          {t('staffLoginTitle')}
         </h2>
         <p className="text-xs sm:text-sm text-slate-400">
-          Restricted access for Travancore Devaswom Board officers & managers
+          {t('staffLoginSubtitle')}
         </p>
       </div>
 
@@ -76,7 +78,7 @@ export function StaffLogin({ onLoginSuccess }: StaffLoginProps) {
               htmlFor={`${uid}-email`}
               className="block text-xs font-semibold text-slate-300 mb-1.5"
             >
-              Staff Official Email <span className="text-red-400">*</span>
+              {t('staffEmail')} <span className="text-red-400">*</span>
             </label>
             <div className="relative">
               <input
@@ -102,7 +104,7 @@ export function StaffLogin({ onLoginSuccess }: StaffLoginProps) {
               htmlFor={`${uid}-password`}
               className="block text-xs font-semibold text-slate-300 mb-1.5"
             >
-              Password <span className="text-red-400">*</span>
+              {t('password')} <span className="text-red-400">*</span>
             </label>
             <div className="relative">
               <input
@@ -131,11 +133,11 @@ export function StaffLogin({ onLoginSuccess }: StaffLoginProps) {
             {isLoading ? (
               <>
                 <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                <span>Authenticating…</span>
+                <span>{t('signingIn')}</span>
               </>
             ) : (
               <>
-                <span>Sign In to Staff Portal</span>
+                <span>{t('signInStaff')}</span>
                 <ArrowRight className="w-4 h-4" aria-hidden="true" />
               </>
             )}

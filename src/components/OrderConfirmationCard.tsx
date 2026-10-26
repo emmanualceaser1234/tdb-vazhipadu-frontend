@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { CheckCircle2, IndianRupee, Calendar, User, Phone, Star, Landmark, RotateCcw } from 'lucide-react';
 import type { Order } from '../types/vazhipadu';
 
@@ -12,6 +13,7 @@ export function OrderConfirmationCard({
   templeName,
   onBookAnother,
 }: OrderConfirmationCardProps) {
+  const { t } = useTranslation();
   const formattedDate = new Date(order.createdAt).toLocaleString('en-IN', {
     dateStyle: 'medium',
     timeStyle: 'short',
@@ -152,7 +154,7 @@ export function OrderConfirmationCard({
         className="w-full py-3.5 px-6 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl transition-all duration-150 flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2 focus:ring-offset-slate-900 shadow-lg shadow-emerald-900/30 active:scale-98"
       >
         <RotateCcw className="w-4 h-4" aria-hidden="true" />
-        <span>Book Another Offering</span>
+        <span>{t('bookAnother')}</span>
       </button>
     </section>
   );

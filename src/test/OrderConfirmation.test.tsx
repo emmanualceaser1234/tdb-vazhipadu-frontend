@@ -202,8 +202,10 @@ describe('Phase 3: Order Confirmation & Idempotency', () => {
     expect(screen.getAllByText('150').length).toBeGreaterThanOrEqual(1);
 
     // Verify cart state is reset to 0 items in localStorage and UI
-    const storedCart = localStorage.getItem('vazhipadu_cart');
-    expect(storedCart === null || storedCart === '[]').toBe(true);
+    await waitFor(() => {
+      const storedCart = localStorage.getItem('vazhipadu_cart');
+      expect(storedCart === null || storedCart === '[]').toBe(true);
+    });
 
     // Cart trigger in header should show 0 items (no badge)
     expect(screen.queryByText(/Palpayasam @/)).not.toBeInTheDocument();

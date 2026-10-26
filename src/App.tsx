@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useLocation, useNavigate, BrowserRouter, useInRouterContext } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   Landmark,
   ShoppingCart,
@@ -15,6 +16,7 @@ import { useCart } from './hooks/useCart';
 import { CartDrawer } from './components/CartDrawer';
 import { OrderConfirmationCard } from './components/OrderConfirmationCard';
 import { StaffPortal } from './components/StaffPortal';
+import { LanguageSwitcher } from './components/LanguageSwitcher';
 import type { OrderFormValues } from './components/OrderForm';
 
 function generateIdempotencyKey(): string {
@@ -22,6 +24,7 @@ function generateIdempotencyKey(): string {
 }
 
 function AppContent() {
+  const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -138,7 +141,7 @@ function AppContent() {
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:top-3 focus:left-3 px-4 py-2.5 bg-emerald-600 text-white font-bold rounded-xl shadow-2xl focus:outline-none focus:ring-2 focus:ring-emerald-400"
       >
-        Skip to main content
+        {t('skipToContent')}
       </a>
 
       {/* ── Header ── */}
@@ -149,8 +152,8 @@ function AppContent() {
               <Landmark className="w-5 h-5 text-white" aria-hidden="true" />
             </div>
             <div>
-              <h1 className="text-lg font-bold text-slate-100 leading-none">Vazhipadu</h1>
-              <p className="text-xs text-slate-400 mt-0.5">Temple Offerings Booking</p>
+              <h1 className="text-lg font-bold text-slate-100 leading-none">{t('appName')}</h1>
+              <p className="text-xs text-slate-400 mt-0.5">{t('appSubtitle')}</p>
             </div>
           </div>
 
@@ -174,7 +177,7 @@ function AppContent() {
               }`}
             >
               <BookOpen className="w-3.5 h-3.5" aria-hidden="true" />
-              <span>Devotee Booking</span>
+              <span>{t('devoteeBooking')}</span>
             </button>
             <button
               role="tab"
@@ -190,37 +193,42 @@ function AppContent() {
               }`}
             >
               <ShieldCheck className="w-3.5 h-3.5" aria-hidden="true" />
-              <span>Staff Orders</span>
+              <span>{t('staffOrders')}</span>
             </button>
           </nav>
 
-          {/* Cart trigger button (visible on devotee view) */}
-          {!isStaffRoute && (
-            <button
-              type="button"
-              onClick={() => setIsCartOpen(true)}
-              aria-label={`Open shopping cart — ${cart.totalItems} item${cart.totalItems !== 1 ? 's' : ''}`}
-              className="min-h-[44px] relative flex items-center gap-2.5 px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-slate-600 rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2 focus:ring-offset-slate-900 shadow-sm"
-            >
-              <div className="relative">
-                <ShoppingCart className="w-5 h-5 text-emerald-400" aria-hidden="true" />
-                {cart.totalItems > 0 && (
-                  <span className="absolute -top-2.5 -right-2.5 min-w-5 h-5 bg-emerald-500 text-white text-xs font-bold rounded-full flex items-center justify-center px-1">
-                    {cart.totalItems}
-                  </span>
-                )}
-              </div>
-              <div className="flex items-center gap-1.5 text-sm">
-                <span className="text-slate-200 font-medium hidden sm:inline">Cart</span>
-                {cart.totalAmount > 0 && (
-                  <span className="hidden sm:inline-flex items-center text-xs font-bold text-emerald-400 bg-emerald-950/60 border border-emerald-800/60 px-2 py-0.5 rounded-md">
-                    <IndianRupee className="w-3 h-3" aria-hidden="true" />
-                    {cart.totalAmount.toLocaleString('en-IN')}
-                  </span>
-                )}
-              </div>
-            </button>
-          )}
+          <div className="flex items-center gap-3">
+            {/* Language Switcher (English / Malayalam) */}
+            <LanguageSwitcher />
+
+            {/* Cart trigger button (visible on devotee view) */}
+            {!isStaffRoute && (
+              <button
+                type="button"
+                onClick={() => setIsCartOpen(true)}
+                aria-label={`Open shopping cart — ${cart.totalItems} item${cart.totalItems !== 1 ? 's' : ''}`}
+                className="min-h-[44px] relative flex items-center gap-2.5 px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-slate-600 rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2 focus:ring-offset-slate-900 shadow-sm"
+              >
+                <div className="relative">
+                  <ShoppingCart className="w-5 h-5 text-emerald-400" aria-hidden="true" />
+                  {cart.totalItems > 0 && (
+                    <span className="absolute -top-2.5 -right-2.5 min-w-5 h-5 bg-emerald-500 text-white text-xs font-bold rounded-full flex items-center justify-center px-1">
+                      {cart.totalItems}
+                    </span>
+                  )}
+                </div>
+                <div className="flex items-center gap-1.5 text-sm">
+                  <span className="text-slate-200 font-medium hidden sm:inline">{t('cart')}</span>
+                  {cart.totalAmount > 0 && (
+                    <span className="hidden sm:inline-flex items-center text-xs font-bold text-emerald-400 bg-emerald-950/60 border border-emerald-800/60 px-2 py-0.5 rounded-md">
+                      <IndianRupee className="w-3 h-3" aria-hidden="true" />
+                      {cart.totalAmount.toLocaleString('en-IN')}
+                    </span>
+                  )}
+                </div>
+              </button>
+            )}
+          </div>
         </div>
       </header>
 
@@ -244,16 +252,16 @@ function AppContent() {
             <section aria-labelledby="hero-heading" className="mb-10 text-center">
               <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-950 border border-emerald-800 rounded-full text-emerald-400 text-xs font-medium mb-4">
                 <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" aria-hidden="true" />
-                Live Booking Available
+                {t('liveBookingBadge')}
               </div>
               <h2
                 id="hero-heading"
                 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-emerald-400 via-teal-300 to-indigo-400 bg-clip-text text-transparent mb-3"
               >
-                Book Temple Offerings
+                {t('heroTitle')}
               </h2>
               <p className="text-slate-400 text-lg max-w-xl mx-auto">
-                Select a temple, choose your vazhipadu, and complete your sacred booking in minutes.
+                {t('heroSubtitle')}
               </p>
             </section>
 
@@ -265,7 +273,7 @@ function AppContent() {
                   htmlFor="temple-select"
                   className="block text-sm font-semibold text-slate-300 mb-2"
                 >
-                  Select Temple
+                  {t('selectTemple')}
                 </label>
                 <div className="relative">
                   <select
@@ -276,7 +284,7 @@ function AppContent() {
                     aria-describedby="temple-select-hint"
                     className="w-full min-h-[44px] appearance-none bg-slate-800 border border-slate-700 text-slate-100 rounded-xl px-4 py-3 pr-10 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2 focus:ring-offset-slate-900 focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-wait cursor-pointer"
                   >
-                    <option value="">— Choose a temple —</option>
+                    <option value="">{t('chooseTemplePlaceholder')}</option>
                     {temples.map((temple) => (
                       <option key={temple.id} value={temple.id}>
                         {temple.name} ({temple.location})
@@ -289,7 +297,7 @@ function AppContent() {
                   />
                 </div>
                 <p id="temple-select-hint" className="text-xs text-slate-500 mt-1.5">
-                  {templesLoading ? 'Loading temples…' : `${temples.length} temple${temples.length !== 1 ? 's' : ''} available`}
+                  {templesLoading ? t('loadingTemples') : t('templesAvailable', { count: temples.length })}
                 </p>
               </div>
 
