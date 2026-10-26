@@ -1,14 +1,20 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Landmark, ShoppingCart, ChevronDown } from 'lucide-react';
+import { Landmark, ShoppingCart, ChevronDown, IndianRupee } from 'lucide-react';
 import type { Temple, Offering } from './types/vazhipadu';
 import { getTemples } from './api/mockClient';
 import { OfferingsList } from './components/OfferingsList';
+import { useCart } from './hooks/useCart';
+import { CartDrawer } from './components/CartDrawer';
+import type { OrderFormValues } from './components/OrderForm';
 
-function App() {
+export function App() {
   const [temples, setTemples] = useState<Temple[]>([]);
   const [selectedTempleId, setSelectedTempleId] = useState<string | null>(null);
-  const [cartCount, setCartCount] = useState(0);
   const [templesLoading, setTemplesLoading] = useState(true);
+  const [isCartOpen, setIsCartOpen] = useState(false);
+
+  // Cart hook with localStorage persistence
+  const cart = useCart();
 
   const loadTemples = useCallback(async () => {
     setTemplesLoading(true);
@@ -26,16 +32,21 @@ function App() {
     void loadTemples();
   }, [loadTemples]);
 
-  function handleAddToCart(_offering: Offering) {
-    setCartCount((prev) => prev + 1);
+  function handleAddToCart(offering: Offering) {
+    cart.addToCart(offering);
+  }
+
+  function handleOrderSubmit(_values: OrderFormValues) {
+    // In Phase 2: Order form validation and capture
+    // Phase 3 will wire this directly to mockClient.createOrder()
   }
 
   const selectedTemple = temples.find((t) => t.id === selectedTempleId) ?? null;
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100">
+    <div className="min-h-screen bg-slate-900 text-slate-100 relative">
       {/* ── Header ── */}
-      <header className="sticky top-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-slate-800">
+      <header className="sticky top-0 z-40 bg-slate-900/80 backdrop-blur-md border-b border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-emerald-500 to-indigo-600 flex items-center justify-center shadow-lg">
@@ -47,19 +58,30 @@ function App() {
             </div>
           </div>
 
-          {/* Cart indicator */}
+          {/* Cart trigger button */}
           <button
             type="button"
-            aria-label={`Cart — ${cartCount} item${cartCount !== 1 ? 's' : ''}`}
-            className="relative flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-slate-900"
+            onClick={() => setIsCartOpen(true)}
+            aria-label={`Open shopping cart — ${cart.totalItems} item${cart.totalItems !== 1 ? 's' : ''}`}
+            className="relative flex items-center gap-2.5 px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-slate-600 rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-slate-900 shadow-sm"
           >
-            <ShoppingCart className="w-5 h-5 text-slate-300" aria-hidden="true" />
-            {cartCount > 0 && (
-              <span className="absolute -top-2 -right-2 w-5 h-5 bg-emerald-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
-                {cartCount}
-              </span>
-            )}
-            <span className="text-sm text-slate-300 hidden sm:inline">Cart</span>
+            <div className="relative">
+              <ShoppingCart className="w-5 h-5 text-emerald-400" aria-hidden="true" />
+              {cart.totalItems > 0 && (
+                <span className="absolute -top-2.5 -right-2.5 min-w-5 h-5 bg-emerald-500 text-white text-xs font-bold rounded-full flex items-center justify-center px-1">
+                  {cart.totalItems}
+                </span>
+              )}
+            </div>
+            <div className="flex items-center gap-1.5 text-sm">
+              <span className="text-slate-200 font-medium hidden sm:inline">Cart</span>
+              {cart.totalAmount > 0 && (
+                <span className="hidden sm:inline-flex items-center text-xs font-bold text-emerald-400 bg-emerald-950/60 border border-emerald-800/60 px-2 py-0.5 rounded-md">
+                  <IndianRupee className="w-3 h-3" aria-hidden="true" />
+                  {cart.totalAmount.toLocaleString('en-IN')}
+                </span>
+              )}
+            </div>
           </button>
         </div>
       </header>
@@ -130,6 +152,34 @@ function App() {
         {/* ── Offerings List ── */}
         <OfferingsList templeId={selectedTempleId} onAddToCart={handleAddToCart} />
       </main>
+
+      {/* ── Floating Cart Bar when cart has items and drawer is closed ── */}
+      {cart.totalItems > 0 && !isCartOpen && (
+        <div className="fixed bottom-6 inset-x-0 z-30 flex justify-center px-4 pointer-events-none">
+          <button
+            type="button"
+            onClick={() => setIsCartOpen(true)}
+            className="pointer-events-auto flex items-center justify-between gap-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-6 py-3.5 rounded-full shadow-2xl shadow-emerald-950/60 border border-emerald-400/30 transition-transform active:scale-95 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+          >
+            <div className="flex items-center gap-2">
+              <ShoppingCart className="w-5 h-5" aria-hidden="true" />
+              <span>{cart.totalItems} offering{cart.totalItems !== 1 ? 's' : ''} in cart</span>
+            </div>
+            <div className="flex items-center gap-1 bg-emerald-700/80 px-2.5 py-1 rounded-full text-sm">
+              <IndianRupee className="w-3.5 h-3.5" aria-hidden="true" />
+              <span>{cart.totalAmount.toLocaleString('en-IN')}</span>
+            </div>
+          </button>
+        </div>
+      )}
+
+      {/* ── Cart Drawer & Checkout ── */}
+      <CartDrawer
+        cart={cart}
+        isOpen={isCartOpen}
+        onClose={() => setIsCartOpen(false)}
+        onOrderSubmit={handleOrderSubmit}
+      />
 
       <footer className="mt-16 border-t border-slate-800 py-6 text-center text-xs text-slate-600">
         © 2026 Vazhipadu — Temple Offerings Booking Platform
