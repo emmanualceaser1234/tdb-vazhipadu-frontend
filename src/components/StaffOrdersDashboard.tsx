@@ -113,7 +113,7 @@ function CancelModal({
             type="button"
             onClick={onClose}
             disabled={isCancelling}
-            className="px-4 py-2 text-sm font-semibold text-slate-300 hover:text-slate-100 hover:bg-slate-800 rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-slate-500"
+            className="min-h-[44px] px-4 py-2 text-sm font-semibold text-slate-300 hover:text-slate-100 hover:bg-slate-800 rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 focus:ring-offset-slate-900"
           >
             Keep Order
           </button>
@@ -121,7 +121,7 @@ function CancelModal({
             type="button"
             onClick={onConfirm}
             disabled={isCancelling}
-            className="px-4 py-2 text-sm font-semibold bg-rose-600 hover:bg-rose-500 disabled:bg-slate-700 text-white rounded-xl transition-colors flex items-center gap-2 focus:outline-none focus:ring-2 focus:ring-rose-400 shadow-lg shadow-rose-950/40"
+            className="min-h-[44px] px-4 py-2 text-sm font-semibold bg-rose-600 hover:bg-rose-500 disabled:bg-slate-700 text-white rounded-xl transition-colors flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 focus:ring-offset-slate-900 shadow-lg shadow-rose-950/40"
           >
             {isCancelling ? (
               <>
@@ -295,7 +295,7 @@ export function StaffOrdersDashboard() {
           <button
             type="button"
             onClick={() => void fetchOrders()}
-            className="p-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl text-slate-300 hover:text-slate-100 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="min-w-[44px] min-h-[44px] flex items-center justify-center bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl text-slate-300 hover:text-slate-100 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2 focus:ring-offset-slate-900"
             aria-label="Refresh orders"
           >
             <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} aria-hidden="true" />
@@ -317,7 +317,8 @@ export function StaffOrdersDashboard() {
           <button
             type="button"
             onClick={() => setCancelFeedback(null)}
-            className="text-emerald-400 hover:text-emerald-200 text-xs font-bold px-1"
+            className="min-w-[44px] min-h-[44px] flex items-center justify-center text-emerald-400 hover:text-emerald-200 text-xs font-bold px-2 focus:outline-none focus:ring-2 focus:ring-emerald-600 rounded-lg"
+            aria-label="Dismiss feedback"
           >
             ✕
           </button>
@@ -338,7 +339,7 @@ export function StaffOrdersDashboard() {
             <button
               type="button"
               onClick={handleResetFilters}
-              className="text-xs text-slate-400 hover:text-slate-200 flex items-center gap-1 transition-colors"
+              className="min-h-[44px] px-3 text-xs text-slate-400 hover:text-slate-200 flex items-center gap-1 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-600 rounded-lg"
             >
               <RotateCcw className="w-3 h-3" aria-hidden="true" />
               Reset Filters
@@ -359,7 +360,7 @@ export function StaffOrdersDashboard() {
               id={`${uid}-status`}
               value={statusParam}
               onChange={(e) => handleStatusChange(e.target.value)}
-              className="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 text-slate-200 text-sm rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer"
+              className="w-full min-h-[44px] px-3 py-2.5 bg-slate-900 border border-slate-700 text-slate-200 text-sm rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2 focus:ring-offset-slate-900 cursor-pointer"
             >
               <option value="ALL">All Statuses</option>
               <option value="CONFIRMED">CONFIRMED</option>
@@ -382,14 +383,14 @@ export function StaffOrdersDashboard() {
                 type="date"
                 value={dateParam}
                 onChange={(e) => handleDateChange(e.target.value)}
-                className="w-full px-3 py-2.5 bg-slate-900 border border-slate-700 text-slate-200 text-sm rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 [color-scheme:dark]"
+                className="w-full min-h-[44px] px-3 py-2.5 bg-slate-900 border border-slate-700 text-slate-200 text-sm rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2 focus:ring-offset-slate-900 [color-scheme:dark]"
               />
               {dateParam && (
                 <button
                   type="button"
                   onClick={() => handleDateChange('')}
                   aria-label="Clear date filter"
-                  className="absolute right-8 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 text-xs"
+                  className="min-w-[44px] min-h-[44px] flex items-center justify-center absolute right-1 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-600 rounded-lg"
                 >
                   ✕
                 </button>
@@ -412,7 +413,7 @@ export function StaffOrdersDashboard() {
                 placeholder="e.g. 9876543210"
                 value={phoneParam}
                 onChange={(e) => handlePhoneChange(e.target.value)}
-                className="w-full pl-9 pr-8 py-2.5 bg-slate-900 border border-slate-700 text-slate-200 text-sm rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 placeholder-slate-500"
+                className="w-full min-h-[44px] pl-9 pr-12 py-2.5 bg-slate-900 border border-slate-700 text-slate-200 text-sm rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2 focus:ring-offset-slate-900 placeholder-slate-500"
               />
               <Search
                 className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none"
@@ -423,7 +424,7 @@ export function StaffOrdersDashboard() {
                   type="button"
                   onClick={() => handlePhoneChange('')}
                   aria-label="Clear phone search"
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 text-xs"
+                  className="min-w-[44px] min-h-[44px] flex items-center justify-center absolute right-1 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-600 rounded-lg"
                 >
                   ✕
                 </button>
@@ -562,7 +563,7 @@ export function StaffOrdersDashboard() {
                         <button
                           type="button"
                           onClick={() => setOrderToCancel(order)}
-                          className="px-2.5 py-1 text-xs font-semibold text-rose-400 hover:text-white hover:bg-rose-600 border border-rose-800/60 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-rose-400"
+                          className="min-h-[44px] px-3.5 py-2 text-xs font-semibold text-rose-400 hover:text-white hover:bg-rose-600 border border-rose-800/60 rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-rose-500 focus:ring-offset-2 focus:ring-offset-slate-900 inline-flex items-center justify-center"
                           aria-label={`Cancel Order ${order.orderNumber}`}
                         >
                           Cancel Order
@@ -596,7 +597,7 @@ export function StaffOrdersDashboard() {
               type="button"
               onClick={() => handlePageChange(page - 1)}
               disabled={page <= 1 || isLoading}
-              className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed text-slate-300 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="min-w-[44px] min-h-[44px] rounded-xl bg-slate-800 hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed text-slate-300 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2 focus:ring-offset-slate-900 flex items-center justify-center"
               aria-label="Previous Page"
             >
               <ChevronLeft className="w-4 h-4" aria-hidden="true" />
@@ -606,7 +607,7 @@ export function StaffOrdersDashboard() {
               type="button"
               onClick={() => handlePageChange(page + 1)}
               disabled={page >= totalPages || isLoading}
-              className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed text-slate-300 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="min-w-[44px] min-h-[44px] rounded-xl bg-slate-800 hover:bg-slate-700 disabled:opacity-40 disabled:cursor-not-allowed text-slate-300 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2 focus:ring-offset-slate-900 flex items-center justify-center"
               aria-label="Next Page"
             >
               <ChevronRight className="w-4 h-4" aria-hidden="true" />

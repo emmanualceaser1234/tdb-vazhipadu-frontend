@@ -132,7 +132,15 @@ function AppContent() {
     : undefined;
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 relative">
+    <div className="min-h-screen bg-slate-900 text-slate-100 relative overflow-x-hidden">
+      {/* ── Skip to Main Content (Accessibility) ── */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:top-3 focus:left-3 px-4 py-2.5 bg-emerald-600 text-white font-bold rounded-xl shadow-2xl focus:outline-none focus:ring-2 focus:ring-emerald-400"
+      >
+        Skip to main content
+      </a>
+
       {/* ── Header ── */}
       <header className="sticky top-0 z-40 bg-slate-900/80 backdrop-blur-md border-b border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-wrap items-center justify-between gap-4">
@@ -148,31 +156,38 @@ function AppContent() {
 
           {/* Navigation Tabs: Devotee Booking vs Staff Orders */}
           <nav
+            role="tablist"
             className="flex items-center gap-1 bg-slate-800/80 p-1 rounded-xl border border-slate-700/80"
             aria-label="Portal Navigation"
           >
             <button
+              role="tab"
               type="button"
+              id="tab-devotee-booking"
+              aria-selected={!isStaffRoute}
+              aria-controls="main-content"
               onClick={() => navigate('/')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+              className={`min-h-[44px] flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2 focus:ring-offset-slate-900 ${
                 !isStaffRoute
                   ? 'bg-emerald-600 text-white shadow-sm'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
-              aria-current={!isStaffRoute ? 'page' : undefined}
             >
               <BookOpen className="w-3.5 h-3.5" aria-hidden="true" />
               <span>Devotee Booking</span>
             </button>
             <button
+              role="tab"
               type="button"
+              id="tab-staff-orders"
+              aria-selected={isStaffRoute}
+              aria-controls="main-content"
               onClick={() => navigate('/staff/orders')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+              className={`min-h-[44px] flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2 focus:ring-offset-slate-900 ${
                 isStaffRoute
                   ? 'bg-emerald-600 text-white shadow-sm'
                   : 'text-slate-400 hover:text-slate-200'
               }`}
-              aria-current={isStaffRoute ? 'page' : undefined}
             >
               <ShieldCheck className="w-3.5 h-3.5" aria-hidden="true" />
               <span>Staff Orders</span>
@@ -185,7 +200,7 @@ function AppContent() {
               type="button"
               onClick={() => setIsCartOpen(true)}
               aria-label={`Open shopping cart — ${cart.totalItems} item${cart.totalItems !== 1 ? 's' : ''}`}
-              className="relative flex items-center gap-2.5 px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-slate-600 rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-slate-900 shadow-sm"
+              className="min-h-[44px] relative flex items-center gap-2.5 px-4 py-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 hover:border-slate-600 rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2 focus:ring-offset-slate-900 shadow-sm"
             >
               <div className="relative">
                 <ShoppingCart className="w-5 h-5 text-emerald-400" aria-hidden="true" />
@@ -209,7 +224,7 @@ function AppContent() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+      <main id="main-content" tabIndex={-1} className="max-w-7xl mx-auto px-4 sm:px-6 py-8 outline-none">
         {/* ── Route 1: Staff Orders Management Dashboard ── */}
         {isStaffRoute ? (
           <StaffOrdersDashboard />
@@ -259,7 +274,7 @@ function AppContent() {
                     onChange={(e) => setSelectedTempleId(e.target.value || null)}
                     disabled={templesLoading}
                     aria-describedby="temple-select-hint"
-                    className="w-full appearance-none bg-slate-800 border border-slate-700 text-slate-100 rounded-xl px-4 py-3.5 pr-10 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-wait cursor-pointer"
+                    className="w-full min-h-[44px] appearance-none bg-slate-800 border border-slate-700 text-slate-100 rounded-xl px-4 py-3 pr-10 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2 focus:ring-offset-slate-900 focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-wait cursor-pointer"
                   >
                     <option value="">— Choose a temple —</option>
                     {temples.map((temple) => (
@@ -299,7 +314,7 @@ function AppContent() {
           <button
             type="button"
             onClick={() => setIsCartOpen(true)}
-            className="pointer-events-auto flex items-center justify-between gap-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-6 py-3.5 rounded-full shadow-2xl shadow-emerald-950/60 border border-emerald-400/30 transition-transform active:scale-95 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+            className="pointer-events-auto min-h-[44px] flex items-center justify-between gap-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-6 py-3.5 rounded-full shadow-2xl shadow-emerald-950/60 border border-emerald-400/30 transition-transform active:scale-95 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2 focus:ring-offset-slate-900"
           >
             <div className="flex items-center gap-2">
               <ShoppingCart className="w-5 h-5" aria-hidden="true" />

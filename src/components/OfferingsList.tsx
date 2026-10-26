@@ -72,7 +72,7 @@ function OfferingCard({ offering, onAddToCart }: OfferingCardProps) {
           <button
             type="button"
             onClick={() => onAddToCart(offering)}
-            className="px-3 py-1.5 text-sm font-semibold bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2 focus:ring-offset-slate-800"
+            className="min-h-[44px] min-w-[44px] px-4 py-2 text-sm font-semibold bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2 focus:ring-offset-slate-800 flex items-center justify-center"
             aria-label={`Add ${offering.name} to cart`}
           >
             Add
@@ -138,7 +138,7 @@ export function OfferingsList({ templeId, onAddToCart }: OfferingsListProps) {
         <button
           type="button"
           onClick={retry}
-          className="flex items-center gap-2 px-5 py-2.5 bg-slate-700 hover:bg-slate-600 text-slate-100 font-semibold rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-slate-900"
+          className="min-h-[44px] flex items-center gap-2 px-5 py-2.5 bg-slate-700 hover:bg-slate-600 text-slate-100 font-semibold rounded-xl transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2 focus:ring-offset-slate-900"
         >
           <RefreshCw className="w-4 h-4" aria-hidden="true" />
           Try Again
@@ -165,7 +165,7 @@ export function OfferingsList({ templeId, onAddToCart }: OfferingsListProps) {
             placeholder="Search offerings…"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-3 bg-slate-800 border border-slate-700 text-slate-100 placeholder-slate-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+            className="w-full min-h-[44px] pl-10 pr-4 py-3 bg-slate-800 border border-slate-700 text-slate-100 placeholder-slate-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2 focus:ring-offset-slate-900 focus:border-transparent transition-all"
             aria-label="Search offerings by name"
           />
         </div>
