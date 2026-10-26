@@ -22,6 +22,8 @@ interface OrderFormProps {
   onSubmit: (values: OrderFormValues) => void;
   isSubmitting: boolean;
   submitError: string | null;
+  onRetry?: () => void;
+  initialValues?: Partial<OrderFormValues>;
 }
 
 // ─── Validation ───────────────────────────────────────────────────────────────
@@ -73,14 +75,20 @@ function FieldError({ id, message }: { id: string; message?: string }) {
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────
-export function OrderForm({ onSubmit, isSubmitting, submitError }: OrderFormProps) {
+export function OrderForm({
+  onSubmit,
+  isSubmitting,
+  submitError,
+  onRetry,
+  initialValues,
+}: OrderFormProps) {
   const uid = useId();
 
   const [values, setValues] = useState<OrderFormValues>({
-    devoteeName: '',
-    phone: '',
-    nakshatra: '',
-    offeringDate: '',
+    devoteeName: initialValues?.devoteeName ?? '',
+    phone: initialValues?.phone ?? '',
+    nakshatra: initialValues?.nakshatra ?? '',
+    offeringDate: initialValues?.offeringDate ?? '',
   });
 
   const [touched, setTouched] = useState<Record<keyof OrderFormValues, boolean>>({
@@ -106,6 +114,7 @@ export function OrderForm({ onSubmit, isSubmitting, submitError }: OrderFormProp
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (isSubmitting) return; // Prevent double-submit
     // Touch all fields to reveal all errors
     setTouched({ devoteeName: true, phone: true, nakshatra: true, offeringDate: true });
     if (hasErrors) return;
@@ -133,10 +142,22 @@ export function OrderForm({ onSubmit, isSubmitting, submitError }: OrderFormProp
         <div
           role="alert"
           aria-live="assertive"
-          className="flex items-start gap-3 bg-red-950 border border-red-700 text-red-300 rounded-xl px-4 py-3 text-sm"
+          className="flex items-start justify-between gap-3 bg-red-950/90 border border-red-700 text-red-200 rounded-xl px-4 py-3 text-sm shadow-md"
         >
-          <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" aria-hidden="true" />
-          <p>{submitError}</p>
+          <div className="flex items-start gap-2.5">
+            <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5 text-red-400" aria-hidden="true" />
+            <p>{submitError}</p>
+          </div>
+          {onRetry && (
+            <button
+              type="button"
+              onClick={onRetry}
+              disabled={isSubmitting}
+              className="px-3 py-1 bg-red-800 hover:bg-red-700 text-white text-xs font-semibold rounded-lg transition-colors flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-red-400"
+            >
+              Retry
+            </button>
+          )}
         </div>
       )}
 

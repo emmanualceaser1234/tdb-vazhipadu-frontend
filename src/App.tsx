@@ -1,11 +1,16 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Landmark, ShoppingCart, ChevronDown, IndianRupee } from 'lucide-react';
-import type { Temple, Offering } from './types/vazhipadu';
-import { getTemples } from './api/mockClient';
+import type { Temple, Offering, Order, OfferingItem, Nakshatra } from './types/vazhipadu';
+import { getTemples, createOrder } from './api/mockClient';
 import { OfferingsList } from './components/OfferingsList';
 import { useCart } from './hooks/useCart';
 import { CartDrawer } from './components/CartDrawer';
+import { OrderConfirmationCard } from './components/OrderConfirmationCard';
 import type { OrderFormValues } from './components/OrderForm';
+
+function generateIdempotencyKey(): string {
+  return `idem-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+}
 
 export function App() {
   const [temples, setTemples] = useState<Temple[]>([]);
@@ -15,6 +20,13 @@ export function App() {
 
   // Cart hook with localStorage persistence
   const cart = useCart();
+
+  // Phase 3: Order submission, idempotency & confirmation state
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [lastSubmittedValues, setLastSubmittedValues] = useState<OrderFormValues | null>(null);
+  const [confirmedOrder, setConfirmedOrder] = useState<Order | null>(null);
+  const [idempotencyKey, setIdempotencyKey] = useState<string>(generateIdempotencyKey);
 
   const loadTemples = useCallback(async () => {
     setTemplesLoading(true);
@@ -36,12 +48,76 @@ export function App() {
     cart.addToCart(offering);
   }
 
-  function handleOrderSubmit(_values: OrderFormValues) {
-    // In Phase 2: Order form validation and capture
-    // Phase 3 will wire this directly to mockClient.createOrder()
-  }
+  // Phase 3: Submit order with Double-Submit Prevention & Idempotency
+  const handleOrderSubmit = useCallback(
+    async (values: OrderFormValues) => {
+      // Double-submit prevention
+      if (isSubmitting) return;
+
+      setIsSubmitting(true);
+      setSubmitError(null);
+      setLastSubmittedValues(values);
+
+      try {
+        const effectiveTempleId =
+          selectedTempleId ?? cart.items[0]?.offering.templeId ?? 'temple-1';
+
+        const orderItems: OfferingItem[] = cart.items.map((i) => ({
+          offeringId: i.offering.id,
+          offeringName: i.offering.name,
+          priceRupees: i.offering.priceRupees,
+          quantity: i.quantity,
+          devoteeName: values.devoteeName,
+          nakshatra: values.nakshatra as Nakshatra,
+          date: values.offeringDate,
+        }));
+
+        const newOrder = await createOrder({
+          templeId: effectiveTempleId,
+          devoteeName: values.devoteeName,
+          phone: values.phone,
+          nakshatra: values.nakshatra as Nakshatra,
+          offeringDate: values.offeringDate,
+          items: orderItems,
+          idempotencyKey,
+        });
+
+        // Success flow:
+        setConfirmedOrder(newOrder);
+        cart.clearCart(); // Automatically empty cart on confirmed order
+        setIsCartOpen(false); // Close cart drawer
+        setIdempotencyKey(generateIdempotencyKey()); // Renew key for next booking
+      } catch (err) {
+        // Failure flow:
+        // Cart state and form input state are PRESERVED
+        const message =
+          err instanceof Error
+            ? err.message
+            : 'A transient network error occurred while placing the order. Please retry.';
+        setSubmitError(message);
+      } finally {
+        setIsSubmitting(false);
+      }
+    },
+    [cart, isSubmitting, selectedTempleId, idempotencyKey],
+  );
+
+  const handleRetry = useCallback(() => {
+    if (lastSubmittedValues) {
+      void handleOrderSubmit(lastSubmittedValues);
+    }
+  }, [lastSubmittedValues, handleOrderSubmit]);
+
+  const handleBookAnother = useCallback(() => {
+    setConfirmedOrder(null);
+    setSubmitError(null);
+    setLastSubmittedValues(null);
+  }, []);
 
   const selectedTemple = temples.find((t) => t.id === selectedTempleId) ?? null;
+  const confirmedTemple = confirmedOrder
+    ? temples.find((t) => t.id === confirmedOrder.templeId)?.name
+    : undefined;
 
   return (
     <div className="min-h-screen bg-slate-900 text-slate-100 relative">
@@ -87,74 +163,87 @@ export function App() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
-        {/* ── Hero ── */}
-        <section aria-labelledby="hero-heading" className="mb-10 text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-950 border border-emerald-800 rounded-full text-emerald-400 text-xs font-medium mb-4">
-            <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" aria-hidden="true" />
-            Live Booking Available
+        {/* ── Phase 3: Order Confirmation View ── */}
+        {confirmedOrder ? (
+          <div className="max-w-2xl mx-auto mb-10" data-testid="confirmation-view">
+            <OrderConfirmationCard
+              order={confirmedOrder}
+              templeName={confirmedTemple}
+              onBookAnother={handleBookAnother}
+            />
           </div>
-          <h2
-            id="hero-heading"
-            className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-emerald-400 via-teal-300 to-indigo-400 bg-clip-text text-transparent mb-3"
-          >
-            Book Temple Offerings
-          </h2>
-          <p className="text-slate-400 text-lg max-w-xl mx-auto">
-            Select a temple, choose your vazhipadu, and complete your sacred booking in minutes.
-          </p>
-        </section>
-
-        {/* ── Temple Selector ── */}
-        <section aria-labelledby="temple-select-label" className="mb-8">
-          <div className="max-w-lg mx-auto">
-            <label
-              id="temple-select-label"
-              htmlFor="temple-select"
-              className="block text-sm font-semibold text-slate-300 mb-2"
-            >
-              Select Temple
-            </label>
-            <div className="relative">
-              <select
-                id="temple-select"
-                value={selectedTempleId ?? ''}
-                onChange={(e) => setSelectedTempleId(e.target.value || null)}
-                disabled={templesLoading}
-                aria-describedby="temple-select-hint"
-                className="w-full appearance-none bg-slate-800 border border-slate-700 text-slate-100 rounded-xl px-4 py-3.5 pr-10 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-wait cursor-pointer"
+        ) : (
+          <>
+            {/* ── Hero ── */}
+            <section aria-labelledby="hero-heading" className="mb-10 text-center">
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-950 border border-emerald-800 rounded-full text-emerald-400 text-xs font-medium mb-4">
+                <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" aria-hidden="true" />
+                Live Booking Available
+              </div>
+              <h2
+                id="hero-heading"
+                className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-emerald-400 via-teal-300 to-indigo-400 bg-clip-text text-transparent mb-3"
               >
-                <option value="">— Choose a temple —</option>
-                {temples.map((temple) => (
-                  <option key={temple.id} value={temple.id}>
-                    {temple.name} ({temple.location})
-                  </option>
-                ))}
-              </select>
-              <ChevronDown
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none"
-                aria-hidden="true"
-              />
-            </div>
-            <p id="temple-select-hint" className="text-xs text-slate-500 mt-1.5">
-              {templesLoading ? 'Loading temples…' : `${temples.length} temple${temples.length !== 1 ? 's' : ''} available`}
-            </p>
-          </div>
+                Book Temple Offerings
+              </h2>
+              <p className="text-slate-400 text-lg max-w-xl mx-auto">
+                Select a temple, choose your vazhipadu, and complete your sacred booking in minutes.
+              </p>
+            </section>
 
-          {/* Selected temple description */}
-          {selectedTemple && (
-            <div className="max-w-lg mx-auto mt-4 p-4 bg-slate-800/50 border border-slate-700 rounded-xl">
-              <p className="text-sm font-semibold text-emerald-400 mb-1">{selectedTemple.name}</p>
-              <p className="text-xs text-slate-400 leading-relaxed">{selectedTemple.description}</p>
-            </div>
-          )}
-        </section>
+            {/* ── Temple Selector ── */}
+            <section aria-labelledby="temple-select-label" className="mb-8">
+              <div className="max-w-lg mx-auto">
+                <label
+                  id="temple-select-label"
+                  htmlFor="temple-select"
+                  className="block text-sm font-semibold text-slate-300 mb-2"
+                >
+                  Select Temple
+                </label>
+                <div className="relative">
+                  <select
+                    id="temple-select"
+                    value={selectedTempleId ?? ''}
+                    onChange={(e) => setSelectedTempleId(e.target.value || null)}
+                    disabled={templesLoading}
+                    aria-describedby="temple-select-hint"
+                    className="w-full appearance-none bg-slate-800 border border-slate-700 text-slate-100 rounded-xl px-4 py-3.5 pr-10 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all disabled:opacity-50 disabled:cursor-wait cursor-pointer"
+                  >
+                    <option value="">— Choose a temple —</option>
+                    {temples.map((temple) => (
+                      <option key={temple.id} value={temple.id}>
+                        {temple.name} ({temple.location})
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none"
+                    aria-hidden="true"
+                  />
+                </div>
+                <p id="temple-select-hint" className="text-xs text-slate-500 mt-1.5">
+                  {templesLoading ? 'Loading temples…' : `${temples.length} temple${temples.length !== 1 ? 's' : ''} available`}
+                </p>
+              </div>
 
-        {/* ── Offerings List ── */}
-        <OfferingsList templeId={selectedTempleId} onAddToCart={handleAddToCart} />
+              {/* Selected temple description */}
+              {selectedTemple && (
+                <div className="max-w-lg mx-auto mt-4 p-4 bg-slate-800/50 border border-slate-700 rounded-xl">
+                  <p className="text-sm font-semibold text-emerald-400 mb-1">{selectedTemple.name}</p>
+                  <p className="text-xs text-slate-400 leading-relaxed">{selectedTemple.description}</p>
+                </div>
+              )}
+            </section>
+
+            {/* ── Offerings List ── */}
+            <OfferingsList templeId={selectedTempleId} onAddToCart={handleAddToCart} />
+          </>
+        )}
       </main>
 
-      {/* ── Floating Cart Bar when cart has items and drawer is closed ── */}
-      {cart.totalItems > 0 && !isCartOpen && (
+      {/* ── Floating Cart Bar when cart has items and drawer & confirmation are closed ── */}
+      {cart.totalItems > 0 && !isCartOpen && !confirmedOrder && (
         <div className="fixed bottom-6 inset-x-0 z-30 flex justify-center px-4 pointer-events-none">
           <button
             type="button"
@@ -179,6 +268,9 @@ export function App() {
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
         onOrderSubmit={handleOrderSubmit}
+        isSubmitting={isSubmitting}
+        submitError={submitError}
+        onRetry={handleRetry}
       />
 
       <footer className="mt-16 border-t border-slate-800 py-6 text-center text-xs text-slate-600">
