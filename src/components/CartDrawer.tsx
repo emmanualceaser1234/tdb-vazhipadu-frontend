@@ -98,7 +98,7 @@ export function CartDrawer({
             type="button"
             onClick={onClose}
             aria-label="Close drawer"
-            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500"
+            className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-800 transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2 focus:ring-offset-slate-900"
           >
             <X className="w-5 h-5" aria-hidden="true" />
           </button>
@@ -137,7 +137,7 @@ export function CartDrawer({
                         type="button"
                         onClick={() => removeItem(item.offering.id)}
                         aria-label={`Remove ${item.offering.name} from cart`}
-                        className="p-1 text-slate-500 hover:text-red-400 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 rounded"
+                        className="min-w-[44px] min-h-[44px] flex items-center justify-center text-slate-400 hover:text-red-400 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-slate-800 rounded-lg"
                       >
                         <Trash2 className="w-4 h-4" aria-hidden="true" />
                       </button>
@@ -154,12 +154,12 @@ export function CartDrawer({
                           type="button"
                           onClick={() => decrementItem(item.offering.id)}
                           aria-label={`Decrease quantity of ${item.offering.name}`}
-                          className="w-7 h-7 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200 flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                          className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200 flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2 focus:ring-offset-slate-800"
                         >
-                          <Minus className="w-3 h-3" aria-hidden="true" />
+                          <Minus className="w-3.5 h-3.5" aria-hidden="true" />
                         </button>
                         <span
-                          className="w-6 text-center text-sm font-bold text-slate-100"
+                          className="w-7 text-center text-sm font-bold text-slate-100"
                           aria-live="polite"
                           aria-label={`Quantity: ${item.quantity}`}
                         >
@@ -169,9 +169,9 @@ export function CartDrawer({
                           type="button"
                           onClick={() => incrementItem(item.offering.id)}
                           aria-label={`Increase quantity of ${item.offering.name}`}
-                          className="w-7 h-7 rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200 flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                          className="w-11 h-11 min-w-[44px] min-h-[44px] rounded-lg bg-slate-700 hover:bg-slate-600 text-slate-200 flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2 focus:ring-offset-slate-800"
                         >
-                          <Plus className="w-3 h-3" aria-hidden="true" />
+                          <Plus className="w-3.5 h-3.5" aria-hidden="true" />
                         </button>
                       </div>
 
@@ -216,7 +216,7 @@ export function CartDrawer({
               <button
                 type="button"
                 onClick={() => setView('checkout')}
-                className="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl transition-colors duration-150 flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-emerald-400 shadow-lg shadow-emerald-900/20"
+                className="w-full min-h-[44px] py-3.5 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl transition-colors duration-150 flex items-center justify-center gap-2 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2 focus:ring-offset-slate-900 shadow-lg shadow-emerald-900/20"
               >
                 <span>Proceed to Devotee Details</span>
                 <ArrowRight className="w-4 h-4" aria-hidden="true" />

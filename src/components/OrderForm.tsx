@@ -123,10 +123,10 @@ export function OrderForm({
 
   const fieldClass = (field: keyof OrderFormValues) => {
     const isInvalid = touched[field] && !!errors[field];
-    return `w-full px-4 py-3 bg-slate-800 border rounded-xl text-slate-100 placeholder-slate-500 transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 ${
+    return `w-full min-h-[44px] px-4 py-3 bg-slate-800 border rounded-xl text-slate-100 placeholder-slate-500 transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 ${
       isInvalid
         ? 'border-red-500 focus:ring-red-500'
-        : 'border-slate-700 focus:ring-emerald-500 focus:border-transparent'
+        : 'border-slate-700 focus:ring-emerald-600 focus:border-transparent'
     }`;
   };
 
@@ -153,7 +153,7 @@ export function OrderForm({
               type="button"
               onClick={onRetry}
               disabled={isSubmitting}
-              className="px-3 py-1 bg-red-800 hover:bg-red-700 text-white text-xs font-semibold rounded-lg transition-colors flex-shrink-0 focus:outline-none focus:ring-2 focus:ring-red-400"
+              className="min-h-[44px] px-3.5 py-1.5 bg-red-800 hover:bg-red-700 text-white text-xs font-semibold rounded-lg transition-colors flex-shrink-0 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2 focus:ring-offset-slate-900"
             >
               Retry
             </button>
@@ -284,7 +284,7 @@ export function OrderForm({
         type="submit"
         disabled={isSubmitting}
         aria-busy={isSubmitting}
-        className="w-full py-3.5 px-6 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 disabled:from-slate-600 disabled:to-slate-600 disabled:cursor-not-allowed text-white font-bold rounded-xl transition-all duration-200 shadow-lg shadow-emerald-900/30 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2 focus:ring-offset-slate-900 flex items-center justify-center gap-2"
+        className="w-full min-h-[44px] py-3.5 px-6 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 disabled:from-slate-600 disabled:to-slate-600 disabled:cursor-not-allowed text-white font-bold rounded-xl transition-all duration-200 shadow-lg shadow-emerald-900/30 focus:outline-none focus:ring-2 focus:ring-emerald-600 focus:ring-offset-2 focus:ring-offset-slate-900 flex items-center justify-center gap-2"
       >
         {isSubmitting ? (
           <>
