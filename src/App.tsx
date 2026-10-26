@@ -14,7 +14,7 @@ import { OfferingsList } from './components/OfferingsList';
 import { useCart } from './hooks/useCart';
 import { CartDrawer } from './components/CartDrawer';
 import { OrderConfirmationCard } from './components/OrderConfirmationCard';
-import { StaffOrdersDashboard } from './components/StaffOrdersDashboard';
+import { StaffPortal } from './components/StaffPortal';
 import type { OrderFormValues } from './components/OrderForm';
 
 function generateIdempotencyKey(): string {
@@ -225,9 +225,9 @@ function AppContent() {
       </header>
 
       <main id="main-content" tabIndex={-1} className="max-w-7xl mx-auto px-4 sm:px-6 py-8 outline-none">
-        {/* ── Route 1: Staff Orders Management Dashboard ── */}
+        {/* ── Route 1: Staff Orders & Offerings Management Portal ── */}
         {isStaffRoute ? (
-          <StaffOrdersDashboard />
+          <StaffPortal />
         ) : confirmedOrder ? (
           /* ── Route 2: Order Confirmation View ── */
           <div className="max-w-2xl mx-auto mb-10" data-testid="confirmation-view">
